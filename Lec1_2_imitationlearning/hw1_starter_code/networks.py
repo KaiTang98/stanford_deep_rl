@@ -329,11 +329,21 @@ class BCPolicy(nn.Module):
         # ============================================================
         # TODO: Implement BCPolicy.__init__
         # ============================================================
-        raise NotImplementedError("TODO: Implement BCPolicy.__init__")
+        # raise NotImplementedError("TODO: Implement BCPolicy.__init__")
+
+        self.layers = nn.Sequential(
+            nn.Linear(state_dim, hidden),
+            nn.ReLU(),
+            nn.Linear(hidden, hidden),
+            nn.ReLU(),
+            nn.Linear(hidden, action_dim),
+            nn.Sigmoid(),
+        )
 
     def forward(self, state):
         # ============================================================
         # TODO: Implement BCPolicy.forward
         # ============================================================
-        raise NotImplementedError("TODO: Implement BCPolicy.forward")
+        # raise NotImplementedError("TODO: Implement BCPolicy.forward")
 
+        return self.layers(state)

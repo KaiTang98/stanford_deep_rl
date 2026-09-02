@@ -30,7 +30,9 @@ def mse_loss(policy, s_batch: torch.Tensor,
     # ============================================================
     # TODO: Implement mse_loss.
     # ============================================================
-    raise NotImplementedError("TODO: Implement mse_loss")
+    # raise NotImplementedError("TODO: Implement mse_loss")
+    a_pred = policy(s_batch)
+    return nn.MSELoss()(a_pred, a_batch)
 
 
 def flow_matching_loss(policy, s_batch: torch.Tensor,

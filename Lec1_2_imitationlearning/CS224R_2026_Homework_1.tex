@@ -147,7 +147,8 @@ python main.py --method bc_reg --env easy
 \end{verbatim}
 \end{tcolorbox}
 
-\textbf{\color{red}Include your results table here.}
+\textbf{easy mode mean 959.2 std 120.8}
+
 
 \item \textbf{Run the regression agent on hard mode} and report the results in a table below (no new code needed):
 
@@ -157,12 +158,12 @@ python main.py --method bc_reg --env hard
 \end{verbatim}
 \end{tcolorbox}
 
-\textbf{\color{red}Include your results table here.}
+\textbf{hard mode mean 284.8 std 54.9}
 
 
 \item \textbf{Explain} in 2--3 sentences the performance of the MSE regression on hard mode. Why is it performing the way it is? [1 point]\\
 \\
-\textbf{\color{red}Include your explanation here.}
+\textbf{The export randomly pick upper or lower gap to pass which make multi peak distribution and difficult to learn by mse. I tried to change the random 0 1 to only zero and it works now.}
 \end{enumerate}
 
 
