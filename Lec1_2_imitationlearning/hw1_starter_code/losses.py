@@ -52,4 +52,8 @@ def flow_matching_loss(policy, s_batch: torch.Tensor,
     # ============================================================
     # TODO: Implement flow matching loss.
     # ============================================================
-    raise NotImplementedError("TODO: Implement flow_matching_loss")
+    # raise NotImplementedError("TODO: Implement flow_matching_loss")
+    tau = torch.rand(a_batch.shape[0], device=a_batch.device)
+    (x_t, velocity) = policy.schedule.interpolate(a_batch, tau)
+    pred = policy(x_t, s_batch, tau)
+    return nn.MSELoss()(pred, velocity)

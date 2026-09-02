@@ -20,6 +20,7 @@ Structure:
 """
 
 import numpy as np
+from sympy import false
 import torch
 
 from expert import COMMIT_DIST
@@ -83,7 +84,8 @@ class DeterministicExpert:
             # ======================================================
             # TODO (Problem 4): Set the raw target.
             # ======================================================
-            raise NotImplementedError
+            # raise NotImplementedError
+            raw_target = float(gap1_y)
         else:
             raw_target = float(midpoint)
 
@@ -95,6 +97,49 @@ class DeterministicExpert:
 
         return float(np.clip(self._smooth_target, 0.0, 1.0))
 
+# ---------------------------------------------------------------------------
+# Chunk executor (receding horizon)
+# ---------------------------------------------------------------------------
+
+class ChunkExecutor:
+    """Execute action chunks with a receding horizon.
+
+    Every ``execute_steps`` steps the policy is queried for a new chunk of
+    ``chunk_size`` actions.  Only the first ``execute_steps`` are executed
+    before re-querying.
+    """
+
+    def __init__(self, chunk_size=20, execute_steps=10):
+        self.chunk_size = chunk_size
+        self.execute_steps = execute_steps
+        self.action_chunk = None
+        self.step_in_chunk = 0
+
+    def reset(self):
+        self.action_chunk = None
+        self.step_in_chunk = 0
+
+    def needs_query(self):
+        return self.action_chunk is None or self.step_in_chunk >= self.execute_steps
+
+    def set_chunk(self, chunk):
+        """chunk: numpy array or list of length chunk_size."""
+        self.action_chunk = np.array(chunk, dtype=np.float32).flatten()
+        self.step_in_chunk = 0
+
+    def get_action(self):
+        action = self.action_chunk[self.step_in_chunk]
+        self.step_in_chunk += 1
+        return float(np.clip(action, 0.0, 1.0))
+
+    def get_all_targets(self):
+        """Return the full predicted chunk (for visualisation)."""
+        if self.action_chunk is None:
+            return np.array([])
+        return self.action_chunk.copy()
+
+    def current_index(self):
+        return self.step_in_chunk
 
 @torch.no_grad()
 def rollout_episode(env, policy, seed, action_chunk, device):
@@ -126,8 +171,26 @@ def rollout_episode(env, policy, seed, action_chunk, device):
     # ============================================================
     # TODO (Problem 4): Implement single-episode policy rollout.
     # ============================================================
-    raise NotImplementedError("TODO: Implement rollout_episode")
-
+    # raise NotImplementedError("TODO: Implement rollout_episode")
+    executor = ChunkExecutor(execute_steps=EXECUTE_STEPS)
+    obs, _ = env.reset(seed=seed)
+    ep_states = []
+    ep_expert_actions = []
+    done = False
+    while not done:
+        state_t = torch.tensor(obs, dtype=torch.float32,
+                                device=device).unsqueeze(0)
+        pred = policy(state_t).cpu().numpy().flatten()
+        executor.set_chunk(pred)
+        for i in range(EXECUTE_STEPS):
+            ep_states.append(obs.copy())
+            action = executor.get_action()
+            obs, _, terminated, truncated, _ = env.step(np.array([action]))
+            ep_expert_actions.append(action)
+            done = terminated or truncated
+            if done:
+                break
+    return(ep_states, ep_expert_actions)
 
 @torch.no_grad()
 def rollout_and_relabel(policy, difficulty, num_episodes, pipe_speed, seed,
@@ -163,12 +226,21 @@ def rollout_and_relabel(policy, difficulty, num_episodes, pipe_speed, seed,
     det_expert = DeterministicExpert()
     new_states, new_actions = [], []
 
+    for rnd in range(1, num_episodes+1):
+        det_expert.reset()
+        ep_states, ep_expert_actions = rollout_episode(env, policy, seed+rnd, action_chunk, device)
+        for t in range(len(ep_states)):
+            ep_expert_actions[t] = det_expert.act(ep_states[t])
+        for i in range(len(ep_states) - action_chunk + 1):
+            new_states.append(ep_states[i])
+            new_actions.append(ep_expert_actions[i:i + action_chunk])
+    return np.array(new_states, dtype=np.float32), np.array(new_actions, dtype=np.float32)
 
     # ============================================================
     # TODO (Problem 4): Loop over episodes, call rollout_episode,
     #   window into (state, action_chunk) pairs, return arrays.
     # ============================================================
-    raise NotImplementedError("TODO: Implement rollout_and_relabel")
+    # raise NotImplementedError("TODO: Implement rollout_and_relabel")
 
 
 def run_dagger(difficulty, initial_states, initial_actions, rounds,

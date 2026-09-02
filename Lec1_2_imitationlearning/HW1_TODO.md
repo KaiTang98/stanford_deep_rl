@@ -125,20 +125,20 @@ export SDL_AUDIODRIVER=dummy
 
 文件: `[networks.py](hw1_starter_code/networks.py)`, `[losses.py](hw1_starter_code/losses.py)`
 
-- [ ] `FlowMatchingSchedule.interpolate`
+- [x] `FlowMatchingSchedule.interpolate`
   - 给定 clean action a_1、timestep \tau，采样 noise \epsilon \sim \mathcal{N}(0,I)
   - a_\tau = \tau a_1 + (1-\tau)\epsilon，目标速度 v = a_1 - \epsilon
-- [ ] `FlowMatchingSchedule.sample`
+- [x] `FlowMatchingSchedule.sample`
   - 从 a_0 \sim \mathcal{N}(0,I) 出发，Euler 积分 `num_steps` 步
   - 结果 clamp 到 [0, 1]
-- [ ] `flow_matching_loss`
+- [x] `flow_matching_loss`
   - 调 `schedule.interpolate`，对预测速度与目标速度做 MSE
 
 
 
 ### 2.2 跑实验
 
-- [ ] Hard mode:
+- [x] Hard mode:
   ```bash
   python main.py --method bc_flow --env hard
   ```
@@ -148,17 +148,17 @@ export SDL_AUDIODRIVER=dummy
 
 | 环境   | Mean Episode Length | Std | 结果文件路径                                 |
 | ---- | ------------------- | --- | -------------------------------------- |
-| hard |                     |     | `results/<timestamp>/bc_flow_hard.txt` |
+| hard | 1000                | 0   | `results/<timestamp>/bc_flow_hard.txt` |
 
 
-- [ ] 保存/复制 `bc_flow_hard.txt`
+- [x] 保存/复制 `bc_flow_hard.txt`
 
 
 
 ### 2.3 写报告
 
-- [ ] 填 hard mode 结果表
-- [ ] 写 2–3 句解释：flow matching 为什么在 hard 上更好？
+- [x] 填 hard mode 结果表
+- [x] 写 2–3 句解释：flow matching 为什么在 hard 上更好？
   - 提示：生成式模型能建模**多峰**动作分布，不像 MSE 只能输出均值
 
 ---
@@ -173,13 +173,13 @@ export SDL_AUDIODRIVER=dummy
 
 文件: `[dagger.py](hw1_starter_code/dagger.py)`
 
-- [ ] `DeterministicExpert.act` — hard mode 靠近管道时**确定性地**选 gap1（upper gap）
+- [x] `DeterministicExpert.act` — hard mode 靠近管道时**确定性地**选 gap1（upper gap）
   - 消除随机双峰，让 MSE 回归能学
-- [ ] `rollout_episode` — 单 episode rollout
+- [x] `rollout_episode` — 单 episode rollout
   - `env.reset(seed=seed)`
   - action chunk + receding horizon（`EXECUTE_STEPS=10`）
   - 返回 `(ep_states, ep_expert_actions)` — 注意这里收集的是 policy 访问的 states
-- [ ] `rollout_and_relabel` — 多 episode
+- [x] `rollout_and_relabel` — 多 episode
   - 调 `rollout_episode` 收集 states
   - 用 `DeterministicExpert` relabel 成 expert actions
   - window 成 `(state, action_chunk)` 训练对
@@ -188,7 +188,7 @@ export SDL_AUDIODRIVER=dummy
 
 ### 3.2 跑实验
 
-- [ ] Hard mode（默认 5 rounds）:
+- [x] Hard mode（默认 5 rounds）:
   ```bash
   python main.py --method dagger --env hard
   ```

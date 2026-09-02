@@ -268,7 +268,11 @@ class FlowMatchingSchedule:
         # ============================================================
         # TODO: Implement the flow matching interpolation.
         # ============================================================
-        raise NotImplementedError("TODO: Implement FlowMatchingSchedule.interpolate")
+        # raise NotImplementedError("TODO: Implement FlowMatchingSchedule.interpolate")
+        noise = torch.randn_like(x1)
+        x_t = t.view(-1,1) * x1 + (1-t.view(-1,1)) * noise
+        velocity = x1 - noise
+        return (x_t, velocity) 
 
     @torch.no_grad()
     def sample(self, model, state):
@@ -284,7 +288,14 @@ class FlowMatchingSchedule:
         # ============================================================
         # TODO: Implement sampling for flow matching.
         # ============================================================
-        raise NotImplementedError("TODO: Implement FlowMatchingSchedule.sample")
+        # raise NotImplementedError("TODO: Implement FlowMatchingSchedule.sample")
+        B = state.shape[0]
+        action = torch.randn(B, self.action_dim, device=state.device)
+        dt = 1 / self.num_steps
+        for i in range(self.num_steps):
+            tau = torch.tensor(i * dt, device=state.device, dtype=torch.float32)
+            action = action + dt * model(action, state, tau)
+        return(action.clamp(0,1))
 
 
 # ---------------------------------------------------------------------------
