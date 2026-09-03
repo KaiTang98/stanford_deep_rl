@@ -1,0 +1,123 @@
+# =============================================================================
+# CS224R 课程仓库：Mac ↔ Linux GPU 服务器同步
+# 保留：源码、配置、demos/*.npz、作业 tex/pdf、讲义
+# 丢掉：训练产物、缓存、密钥、本机杂文件
+# =============================================================================
+
+# ----- OS / 编辑器 -----
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+Desktop.ini
+*~
+*.swp
+*.swo
+.idea/
+.cursor/
+*.code-workspace
+
+# Obsidian 工作区是本机状态，不要同步
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache/
+
+# ----- Python -----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.coverage
+htmlcov/
+
+# ----- 虚拟环境（服务器和 Mac 各自 conda/venv，不要进 git） -----
+.venv/
+venv/
+env/
+.env/
+
+# ----- 密钥 / 本机凭证 -----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+.modal.toml
+.wandb/
+
+# ----- HW2 Hydra / 训练输出（服务器上会长得很大） -----
+Logdir/
+**/Logdir/
+outputs/
+multirun/
+exp/
+.hydra/
+**/buffer/
+**/snapshots/
+snapshot.pt
+*.ckpt
+*.pth
+*.pt
+
+# WandB 本地副本；曲线看 wandb.ai 即可
+wandb/
+wandb-offline/
+
+# 评测视频、回放
+videos/
+**/videos/
+eval_video/
+train_video/
+*.mp4
+*.gif
+
+# HW1 本地实验目录（数字已写进 tex，不必再同步权重/图）
+**/models/
+**/results/
+
+# 最终要交的图/CSV 可放这里，不受上面规则影响
+!hw2_onlinerl/hw2_submission/
+!hw2_onlinerl/hw2_submission/**
+
+# Hydra / submitit
+.submitit/
+*.out
+*.err
+
+# ----- LaTeX 编译中间文件（保留 .tex / 作业 PDF / 讲义 PDF） -----
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.out
+*.synctex.gz
+*.toc
+*.nav
+*.snm
+*.vrb
+*.latexmk
+_minted*/
+
+# ----- 压缩包：源码已经在仓库里，zip 不必再同步 -----
+*.zip
+
+# ----- 杂项 -----
+*.log
+tmp/
+temp/
+.cache/
+core
+core.*
