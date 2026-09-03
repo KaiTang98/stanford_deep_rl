@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from mpmath.libmp.libmpc import alpha_crossover
 import numpy as np
 
 
@@ -116,14 +117,22 @@ def choose_action(
     """Select an action with epsilon-greedy exploration."""
 
 
-    ### YOUR CODE HERE ###
-    pass
-    ### YOUR CODE HERE ###
+    # ### YOUR CODE HERE ###
+    # pass
+    # ### YOUR CODE HERE ###
+    if rng.random() < epsilon:
+        action = rng.integers(0, 4)
+    else:
+        action = greedy_action(q_table, state)
+    return action
+
 
 def greedy_action(q_table: np.ndarray, state: tuple[int, int]) -> int:
-    ### YOUR CODE HERE ###
-    pass
-    ### YOUR CODE HERE ###
+    # ### YOUR CODE HERE ###
+    # pass
+    # ### YOUR CODE HERE ###
+    action = int(np.argmax(action_values(q_table, state)))
+    return action
 
 
 
@@ -141,13 +150,16 @@ def train_q_learning(scenario: Scenario) -> tuple[np.ndarray, GridWorld]:
         state = env.start
         epsilon = epsilon_for_episode(scenario, episode_idx)
         for _ in range(scenario.horizon):
-
-
-            ### YOUR CODE HERE ###
-            pass
-            ### YOUR CODE HERE ###
-
-
+            # ### YOUR CODE HERE ###
+            # pass
+            # ### YOUR CODE HERE ###
+            action = choose_action(q_table, state, epsilon, rng)
+            nxt_state, reward, terminated = env.step(state, action)
+            x, y = state
+            q_table[y,x,action] = q_table[y,x,action] + scenario.alpha * (reward + scenario.gamma * np.max(action_values(q_table, nxt_state)) - q_table[y, x, action])
+            if terminated:
+                break
+            state = nxt_state
     return q_table, env
 
 
