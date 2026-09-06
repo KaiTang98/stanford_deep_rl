@@ -132,7 +132,14 @@ class PPOAgent:
         for t in reversed(range(T)):
 
             ### YOUR CODE HERE ###
+            delta_t = rewards[t] + discounts[t] * (1 - dones[t]) * next_values[t] - values[t]
+            # if t == T-1:
+            #     advantages[t] = delta_t + discounts[t] * self.gae_lambda * (1 - dones[t]) * gae
+            # else:
+            #     advantages[t] = delta_t + discounts[t] * self.gae_lambda * (1 - dones[t]) * advantages[t+1]
 
+            gae = delta_t + discounts[t] * self.gae_lambda * (1 - dones[t]) * gae
+            advantages[t] = gae
 
             ### YOUR CODE HERE ###
 
@@ -191,12 +198,11 @@ class PPOAgent:
         # Compute GAE advantages
         with torch.no_grad():
 
-
             ### YOUR CODE HERE ###
-            
-                        
+            values = self.critic(obs_all).squeeze(-1)
+            next_values = self.critic(next_obs_all).squeeze(-1)
+            advantages_all, returns_all = self.compute_gae(rew_all, values, next_values, disc_all, done_all)                        
             ### YOUR CODE HERE ###
-
 
             adv_std = advantages_all.std(unbiased=False)
 
@@ -239,10 +245,9 @@ class PPOAgent:
 
                 ### YOUR CODE HERE ###
 
-                
-                
-                
-
+                ratio = torch.exp(new_log_prob - olp_ep)
+                policy_loss = - torch.min(ratio * adv_ep, torch.clamp(ratio, 1 - self.clip_eps, 1 + self.clip_eps) * adv_ep).mean()
+    
                 ### YOUR CODE HERE ###
 
                 # Reverse KL to frozen reference policy:
