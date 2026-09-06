@@ -134,6 +134,8 @@ class Workspace:
             total_success += time_step.reward > 0.0
             episode += 1
 
+        self.video_recorder.save(f'{self.global_frame}.mp4')
+
         with self.logger.log_and_dump_ctx(self.global_frame, ty='eval') as log:
             log('episode_reward', total_reward / episode)
             log('episode_success', total_success / episode)

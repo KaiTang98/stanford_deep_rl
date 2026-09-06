@@ -70,9 +70,15 @@ class MetaWorldEnv:
     self._step = 0
     return state
   
-  def render(self, mode ='rgb_array', width = 84, height = 84):
-      """Stub render method kept for interface compatibility."""
-      return
+  def render(self, mode='rgb_array', width=256, height=256):
+      """Return an offscreen RGB frame for evaluation videos."""
+      img = self._env.sim.render(
+          width=width,
+          height=height,
+          mode='offscreen',
+          camera_name='corner',
+      )
+      return np.ascontiguousarray(img[::-1])
       
 
 
