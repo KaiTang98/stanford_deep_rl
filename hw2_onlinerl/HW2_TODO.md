@@ -163,16 +163,16 @@ copy_tree(str(_demo_src), str(self.work_dir / "demos"))
 
 - [x] 通读 `[README.md](hw2%204/README.md)`（三个 baseline、Hydra 入口、config）
 - [x] 通读作业 PDF Overview + Setup + 提交格式
-- [ ] 通读只读文件（理解 pipeline，**不要改算法逻辑**）:
-  - [ ] `train_on_policy.py` — PPO 训练循环：BC pretrain → 收集 rollout → `agent.update`
-  - [ ] `train_off_policy.py` — AC 训练循环：BC pretrain → replay 更新 critic（`utd` 次）→ actor / 间歇 BC
-  - [ ] `mw.py` — Meta-World `hammer-v2`：sparse reward（成功=1）、`action_repeat=2`、episode 最长 50
-  - [ ] `replay_buffer.py` — demo / replay；off-policy 默认 **n-step=3**（batch 里的 `reward`/`discount` 已经是 n-step 聚合）
-  - [ ] `utils.py` — `TruncatedNormal`、`soft_update_params`、`to_torch`
-  - [ ] `logger.py` — WandB + CSV；报告要截的是 `eval/episode_success`
-  - [ ] `cfgs/on_policy_config.yaml`、`cfgs/off_policy_config.yaml`
-  - [ ] `modal_on_policy.py`、`modal_off_policy.py`、`modal_gridworld_q_learning.py`
-- [ ] 编译一次报告模板确认 LaTeX 可用:
+- [x] 通读只读文件（理解 pipeline，**不要改算法逻辑**）:
+  - [x] `train_on_policy.py` — PPO 训练循环：BC pretrain → 收集 rollout → `agent.update`
+  - [x] `train_off_policy.py` — AC 训练循环：BC pretrain → replay 更新 critic（`utd` 次）→ actor / 间歇 BC
+  - [x] `mw.py` — Meta-World `hammer-v2`：sparse reward（成功=1）、`action_repeat=2`、episode 最长 50
+  - [x] `replay_buffer.py` — demo / replay；off-policy 默认 **n-step=3**（batch 里的 `reward`/`discount` 已经是 n-step 聚合）
+  - [x] `utils.py` — `TruncatedNormal`、`soft_update_params`、`to_torch`
+  - [x] `logger.py` — WandB + CSV；报告要截的是 `eval/episode_success`
+  - [x] `cfgs/on_policy_config.yaml`、`cfgs/off_policy_config.yaml`
+  - [x] `modal_on_policy.py`、`modal_off_policy.py`、`modal_gridworld_q_learning.py`
+- [x] 编译一次报告模板确认 LaTeX 可用:
   ```bash
   cd hw2_onlinerl
   latexmk -pdf CS224R_2026_Homework_2.tex
@@ -246,6 +246,8 @@ Q(s_t,a_t) \leftarrow Q(s_t,a_t) + \alpha \big[ r_t + \gamma \max_{a'} Q(s_{t+1}
 - Scenario 2：每步惩罚加倍，近的 Goal 2 更划算
 - Scenario 3：每步 **正** 奖励，agent 可能故意耗满 horizon、不进 terminal
 
+
+
 ### 1.3 写报告
 
 - [x] 每个 scenario：是否到达 goal、到达哪一个
@@ -271,7 +273,7 @@ Q(s_t,a_t) \leftarrow Q(s_t,a_t) + \alpha \big[ r_t + \gamma \max_{a'} Q(s_{t+1}
 
 ### 2.1 实现代码
 
-- [ ] `compute_gae`：从 t=T-1,\ldots,0 反传
+- [x] `compute_gae`：从 t=T-1,\ldots,0 反传
 
 \delta_t = r_t + \gamma (1-d_t) V(s_{t+1}) - V(s_t),\quad
 \hat A_t = \delta_t + \gamma\lambda (1-d_t)\hat A_{t+1}
@@ -282,11 +284,11 @@ Q(s_t,a_t) \leftarrow Q(s_t,a_t) + \alpha \big[ r_t + \gamma \max_{a'} Q(s_{t+1}
 - **done 时不要 bootstrap**（用 `dones`）
 - 函数还传入 `discounts`：训练时它已经是 `γ * env_discount`；`tests/test_on_policy.py` 里 `discounts` 恒为 0.99，**必须再乘** `(1-done)` 才能过 GAE 单测
 
-- [ ] `update` 里第一处 `YOUR CODE HERE`（`torch.no_grad()` 内）:
+- [x] `update` 里第一处 `YOUR CODE HERE`（`torch.no_grad()` 内）:
   - 用 critic 算 `values`、`next_values`
   - 调 `compute_gae` 得到 `advantages_all`、`returns_all`
   - 这些是 target，不要让梯度流过
-- [ ] `update` 里第二处：PPO-Clip
+- [x] `update` 里第二处：PPO-Clip
   1. `ratio` \rho_t = \exp(\log\pi_\theta - \log\pi_{\text{old}})（用 log 差，不要直接除概率）
   2. `policy_loss`（**最小化**，所以带负号）:
 
@@ -300,8 +302,8 @@ L^{\mathrm{CLIP}}(\theta) = -\frac{1}{B}\sum_t \min\big(\rho_t \hat A_t,\ \mathr
 python tests/test_on_policy.py
 ```
 
-- [ ] `test_compute_gae_matches_manual_recursion` 通过
-- [ ] （可选）把 clip 实现贴进测试文件里的第二段，跑 `test_clipped_surrogate_objective`
+- [x] `test_compute_gae_matches_manual_recursion` 通过
+- [x] （可选）把 clip 实现贴进测试文件里的第二段，跑 `test_clipped_surrogate_objective`
 
 
 
@@ -310,11 +312,11 @@ python tests/test_on_policy.py
 默认关键超参（`cfgs/on_policy_config.yaml`）: `rollout_length=4096`，`batch_size=64`，`pretrain_steps=10000`，`clip_eps=0.1`，`ppo_epochs=3`，`gae_lambda=0.99`，`gamma=0.99`，`hidden_dim=64`，`lr=3e-4`。  
 官方 Modal 用 A10；你这边 **一张 4090 足够**。墙钟大约 1–3 小时量级（仿真是瓶颈，别指望 5090 快很多）。
 
-- [ ] 4090 上 `tmux` 里启动（单卡）:
+- [x] 4090 上 `tmux` 里启动（单卡）:
   ```bash
   CUDA_VISIBLE_DEVICES=0 python train_on_policy.py device=cuda save_video=false
   ```
-- [ ] 打开 WandB，确认 `eval/episode_success` 在刷
+- [x] 打开 WandB，确认 `eval/episode_success` 在刷
 - [ ] 跑到 **1 million steps**；成功率应 **≥ 25%**
 
 **记录区 — Problem 2 结果**

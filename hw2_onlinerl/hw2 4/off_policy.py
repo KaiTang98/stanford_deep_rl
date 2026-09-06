@@ -126,7 +126,26 @@ class ACAgent:
             batch, self.device)
 
         ### YOUR CODE HERE ###
+        with torch.no_grad():
+            dist = self.actor(next_obs)
+            pred_action = dist.sample(clip=self.stddev_clip)
+            qs_target = self.critic_target(next_obs, pred_action)
+            qi, qj = random.sample(qs_target, 2)
+            y = reward + discount * torch.min(qi, qj)
 
+        critic_loss = 0
+        qs_online = self.critic(obs, action)
+        for qs in qs_online:
+            critic_loss = critic_loss + F.mse_loss(qs, y)
+        
+        self.critic_opt.zero_grad(set_to_none=True)
+        critic_loss.backward()
+        self.critic_opt.step()
+
+        utils.soft_update_params(self.critic, self.critic_target, self.critic_target_tau)
+        metrics['critic_loss'] = critic_loss.item()
+        metrics['bellman_target'] = y.mean().item()
+        metrics['q_online'] = torch.stack(qs_online).mean().item()
 
         #####################
         return metrics
@@ -160,7 +179,17 @@ class ACAgent:
             batch, self.device)
 
         ### YOUR CODE HERE ###
+        dist = self.actor(obs)
+        pred_action = dist.sample(clip=self.stddev_clip)
 
+        qs_all = self.critic(obs, pred_action)
+        actor_loss = -torch.stack(qs_all).mean()
+
+        self.actor_opt.zero_grad(set_to_none=True)
+        actor_loss.backward()
+        self.actor_opt.step()
+
+        metrics["actor_loss"] = actor_loss.item()
         ######################
 
         return metrics
@@ -194,7 +223,15 @@ class ACAgent:
         obs, action, _, _, _ = utils.to_torch(batch, self.device)
 
         ### YOUR CODE HERE ###
-        
+        dist = self.actor(obs)
+        actor_loss = -dist.log_prob(action).sum(-1, keepdim=True).mean()
+
+        self.actor_opt.zero_grad(set_to_none=True)
+        actor_loss.backward()
+        self.actor_opt.step()
+
+        metrics['pretrain_actor_loss'] = actor_loss.item()
+        metrics['actor_std'] = dist.scale.mean().item()
 
         #####################
 
