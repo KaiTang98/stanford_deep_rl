@@ -121,3 +121,6 @@ temp/
 .cache/
 core
 core.*
+
+# ----- 数据集 -----
+hw2_onlinerl/hw2 4/viz
