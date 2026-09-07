@@ -80,10 +80,11 @@ class Workspace:
         self._demo_iter = None
         
         from distutils.dir_util import copy_tree
-        copy_tree("/root/demos/",
-                  str(self.work_dir / 'demos'))
-        copy_tree("/root/demos/",
-                  str(self.work_dir / 'buffer'))
+        _demo_src = Path(__file__).resolve().parent / "demos"
+        if not _demo_src.exists():
+            raise FileNotFoundError(f"demo dir not found: {_demo_src}")
+        copy_tree(str(_demo_src), str(self.work_dir / 'demos'))
+        copy_tree(str(_demo_src), str(self.work_dir / 'buffer'))
 
         self.video_recorder = VideoRecorder(
             self.work_dir if self.cfg.save_video else None)
@@ -132,9 +133,9 @@ class Workspace:
                 step += 1
                 
             total_success += time_step.reward > 0.0
+            if episode == 0:
+                self.video_recorder.save(f'{self.global_frame}.mp4')
             episode += 1
-
-        self.video_recorder.save(f'{self.global_frame}.mp4')
 
         with self.logger.log_and_dump_ctx(self.global_frame, ty='eval') as log:
             log('episode_reward', total_reward / episode)
