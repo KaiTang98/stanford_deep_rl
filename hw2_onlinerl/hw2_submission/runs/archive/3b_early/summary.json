@@ -1,0 +1,36 @@
+{
+  "key": "3b_early",
+  "label": "3B \u7b2c\u4e00\u8f6e",
+  "method": "3B",
+  "wave": "archive",
+  "homework_csv": null,
+  "wandb": "279mwi4z",
+  "criterion": "40k \u524d \u2265 90%",
+  "gate_frame": 40000,
+  "gate_thr": 0.9,
+  "metric": "max_at_or_before_gate",
+  "logdir_run": "run_154425_agent.num_critics=10,device=cuda,save_snapshot=true,save_video=false,utd=5",
+  "stats": {
+    "n_rows": 150,
+    "first_frame": 0.0,
+    "last_frame": 298000.0,
+    "last_success": 0.82,
+    "max_success": 0.86,
+    "max_success_frame": 218000.0,
+    "at_gate_success": 0.0,
+    "at_gate_frame": 40000.0,
+    "max_before_gate_success": 0.28,
+    "max_before_gate_frame": 20000.0,
+    "official_success": 0.28,
+    "official_frame": 20000.0,
+    "passed": false,
+    "first_ge_gate": null,
+    "first_ge_25": {
+      "frame": 20000.0,
+      "episode_success": 0.28,
+      "episode": 200.0,
+      "episode_reward": 6.48
+    },
+    "first_ge_90": null
+  }
+}

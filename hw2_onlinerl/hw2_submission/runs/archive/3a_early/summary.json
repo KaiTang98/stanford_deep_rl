@@ -1,0 +1,36 @@
+{
+  "key": "3a_early",
+  "label": "3A \u7b2c\u4e00\u8f6e",
+  "method": "3A",
+  "wave": "archive",
+  "homework_csv": null,
+  "wandb": "9huskn3f",
+  "criterion": "100k \u524d \u2265 90%",
+  "gate_frame": 100000,
+  "gate_thr": 0.9,
+  "metric": "max_at_or_before_gate",
+  "logdir_run": "run_150227_device=cuda,save_snapshot=true,save_video=false",
+  "stats": {
+    "n_rows": 150,
+    "first_frame": 0.0,
+    "last_frame": 298000.0,
+    "last_success": 0.8,
+    "max_success": 0.88,
+    "max_success_frame": 260000.0,
+    "at_gate_success": 0.6,
+    "at_gate_frame": 100000.0,
+    "max_before_gate_success": 0.62,
+    "max_before_gate_frame": 84000.0,
+    "official_success": 0.62,
+    "official_frame": 84000.0,
+    "passed": false,
+    "first_ge_gate": null,
+    "first_ge_25": {
+      "frame": 30000.0,
+      "episode_success": 0.26,
+      "episode": 300.0,
+      "episode_reward": 5.04
+    },
+    "first_ge_90": null
+  }
+}

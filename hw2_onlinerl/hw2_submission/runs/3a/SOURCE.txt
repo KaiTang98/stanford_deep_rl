@@ -1,0 +1,2 @@
+Logdir/run_195513_device=cuda,save_snapshot=true,save_video=false,wandb_group=retrain_process
+wandb_id=14n6qslz

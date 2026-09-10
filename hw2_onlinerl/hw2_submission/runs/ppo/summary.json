@@ -1,0 +1,41 @@
+{
+  "key": "ppo",
+  "label": "PPO (retrain_process, \u5bf9\u5e94 viz/retrain_process/ppo)",
+  "method": "PPO",
+  "wave": "primary",
+  "homework_csv": "on_policy.csv",
+  "wandb": "xgv98hup",
+  "criterion": "1M frames \u65f6 \u2265 25%",
+  "gate_frame": 1000000,
+  "gate_thr": 0.25,
+  "metric": "final_near_1M",
+  "logdir_run": "run_195512_device=cuda,save_snapshot=true,save_video=false,wandb_group=retrain_process",
+  "stats": {
+    "n_rows": 500,
+    "first_frame": 0.0,
+    "last_frame": 998000.0,
+    "last_success": 0.18,
+    "max_success": 0.4,
+    "max_success_frame": 890000.0,
+    "at_gate_success": 0.18,
+    "at_gate_frame": 998000.0,
+    "max_before_gate_success": 0.4,
+    "max_before_gate_frame": 890000.0,
+    "official_success": 0.18,
+    "official_frame": 998000.0,
+    "passed": false,
+    "first_ge_gate": {
+      "frame": 0.0,
+      "episode_success": 0.26,
+      "episode": 0.0,
+      "episode_reward": 3.58
+    },
+    "first_ge_25": {
+      "frame": 0.0,
+      "episode_success": 0.26,
+      "episode": 0.0,
+      "episode_reward": 3.58
+    },
+    "first_ge_90": null
+  }
+}

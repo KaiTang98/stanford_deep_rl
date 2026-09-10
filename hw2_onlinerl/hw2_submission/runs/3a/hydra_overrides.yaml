@@ -1,0 +1,4 @@
+- device=cuda
+- save_video=false
+- save_snapshot=true
+- wandb_group=retrain_process

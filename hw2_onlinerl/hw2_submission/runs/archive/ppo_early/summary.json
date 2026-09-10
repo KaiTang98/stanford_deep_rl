@@ -1,0 +1,41 @@
+{
+  "key": "ppo_early",
+  "label": "PPO \u7b2c\u4e00\u8f6e\uff08\u51e0\u4e4e\u8dd1\u5b8c\uff0c\u65e0 snapshot\uff09",
+  "method": "PPO",
+  "wave": "archive",
+  "homework_csv": null,
+  "wandb": "42rvuutk",
+  "criterion": "1M frames \u65f6 \u2265 25%",
+  "gate_frame": 1000000,
+  "gate_thr": 0.25,
+  "metric": "final_near_1M",
+  "logdir_run": "run_131159_device=cuda,save_video=false",
+  "stats": {
+    "n_rows": 500,
+    "first_frame": 0.0,
+    "last_frame": 998000.0,
+    "last_success": 0.22,
+    "max_success": 0.36,
+    "max_success_frame": 922000.0,
+    "at_gate_success": 0.22,
+    "at_gate_frame": 998000.0,
+    "max_before_gate_success": 0.36,
+    "max_before_gate_frame": 922000.0,
+    "official_success": 0.22,
+    "official_frame": 998000.0,
+    "passed": false,
+    "first_ge_gate": {
+      "frame": 4000.0,
+      "episode_success": 0.28,
+      "episode": 40.0,
+      "episode_reward": 4.04
+    },
+    "first_ge_25": {
+      "frame": 4000.0,
+      "episode_success": 0.28,
+      "episode": 40.0,
+      "episode_reward": 4.04
+    },
+    "first_ge_90": null
+  }
+}

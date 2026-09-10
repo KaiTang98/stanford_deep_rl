@@ -1,0 +1,2 @@
+Logdir/run_131159_device=cuda,save_video=false
+wandb_id=42rvuutk

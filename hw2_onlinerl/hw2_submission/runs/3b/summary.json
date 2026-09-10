@@ -1,0 +1,46 @@
+{
+  "key": "3b",
+  "label": "3B (retrain_process, \u5bf9\u5e94 viz/retrain_process/3b)",
+  "method": "3B",
+  "wave": "primary",
+  "homework_csv": "off_policy.num_critics=10,utd=5.csv",
+  "wandb": "t4ulxxlu",
+  "criterion": "40k \u524d \u2265 90%",
+  "gate_frame": 40000,
+  "gate_thr": 0.9,
+  "metric": "max_at_or_before_gate",
+  "logdir_run": "run_195513_agent.num_critics=10,device=cuda,save_snapshot=true,save_video=false,utd=5,wandb_group=retrain_process",
+  "stats": {
+    "n_rows": 150,
+    "first_frame": 0.0,
+    "last_frame": 298000.0,
+    "last_success": 0.86,
+    "max_success": 0.96,
+    "max_success_frame": 206000.0,
+    "at_gate_success": 0.0,
+    "at_gate_frame": 40000.0,
+    "max_before_gate_success": 0.26,
+    "max_before_gate_frame": 24000.0,
+    "official_success": 0.26,
+    "official_frame": 24000.0,
+    "passed": false,
+    "first_ge_gate": {
+      "frame": 144000.0,
+      "episode_success": 0.9,
+      "episode": 1440.0,
+      "episode_reward": 10.28
+    },
+    "first_ge_25": {
+      "frame": 24000.0,
+      "episode_success": 0.26,
+      "episode": 240.0,
+      "episode_reward": 5.14
+    },
+    "first_ge_90": {
+      "frame": 144000.0,
+      "episode_success": 0.9,
+      "episode": 1440.0,
+      "episode_reward": 10.28
+    }
+  }
+}

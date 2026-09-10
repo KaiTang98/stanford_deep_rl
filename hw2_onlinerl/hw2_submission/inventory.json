@@ -1,0 +1,200 @@
+{
+  "primary": {
+    "ppo": {
+      "logdir_run": "run_195512_device=cuda,save_snapshot=true,save_video=false,wandb_group=retrain_process",
+      "homework_csv": "on_policy.csv",
+      "wandb": "xgv98hup",
+      "criterion": "1M frames \u65f6 \u2265 25%",
+      "n_rows": 500,
+      "first_frame": 0.0,
+      "last_frame": 998000.0,
+      "last_success": 0.18,
+      "max_success": 0.4,
+      "max_success_frame": 890000.0,
+      "at_gate_success": 0.18,
+      "at_gate_frame": 998000.0,
+      "max_before_gate_success": 0.4,
+      "max_before_gate_frame": 890000.0,
+      "official_success": 0.18,
+      "official_frame": 998000.0,
+      "passed": false,
+      "first_ge_gate": {
+        "frame": 0.0,
+        "episode_success": 0.26,
+        "episode": 0.0,
+        "episode_reward": 3.58
+      },
+      "first_ge_25": {
+        "frame": 0.0,
+        "episode_success": 0.26,
+        "episode": 0.0,
+        "episode_reward": 3.58
+      },
+      "first_ge_90": null
+    },
+    "3a": {
+      "logdir_run": "run_195513_device=cuda,save_snapshot=true,save_video=false,wandb_group=retrain_process",
+      "homework_csv": "off_policy.num_critics=2,utd=1.csv",
+      "wandb": "14n6qslz",
+      "criterion": "100k \u524d \u2265 90%",
+      "n_rows": 150,
+      "first_frame": 0.0,
+      "last_frame": 298000.0,
+      "last_success": 0.86,
+      "max_success": 0.94,
+      "max_success_frame": 272000.0,
+      "at_gate_success": 0.48,
+      "at_gate_frame": 100000.0,
+      "max_before_gate_success": 0.64,
+      "max_before_gate_frame": 56000.0,
+      "official_success": 0.64,
+      "official_frame": 56000.0,
+      "passed": false,
+      "first_ge_gate": {
+        "frame": 250000.0,
+        "episode_success": 0.9,
+        "episode": 2500.0,
+        "episode_reward": 10.7
+      },
+      "first_ge_25": {
+        "frame": 22000.0,
+        "episode_success": 0.28,
+        "episode": 220.0,
+        "episode_reward": 5.04
+      },
+      "first_ge_90": {
+        "frame": 250000.0,
+        "episode_success": 0.9,
+        "episode": 2500.0,
+        "episode_reward": 10.7
+      }
+    },
+    "3b": {
+      "logdir_run": "run_195513_agent.num_critics=10,device=cuda,save_snapshot=true,save_video=false,utd=5,wandb_group=retrain_process",
+      "homework_csv": "off_policy.num_critics=10,utd=5.csv",
+      "wandb": "t4ulxxlu",
+      "criterion": "40k \u524d \u2265 90%",
+      "n_rows": 150,
+      "first_frame": 0.0,
+      "last_frame": 298000.0,
+      "last_success": 0.86,
+      "max_success": 0.96,
+      "max_success_frame": 206000.0,
+      "at_gate_success": 0.0,
+      "at_gate_frame": 40000.0,
+      "max_before_gate_success": 0.26,
+      "max_before_gate_frame": 24000.0,
+      "official_success": 0.26,
+      "official_frame": 24000.0,
+      "passed": false,
+      "first_ge_gate": {
+        "frame": 144000.0,
+        "episode_success": 0.9,
+        "episode": 1440.0,
+        "episode_reward": 10.28
+      },
+      "first_ge_25": {
+        "frame": 24000.0,
+        "episode_success": 0.26,
+        "episode": 240.0,
+        "episode_reward": 5.14
+      },
+      "first_ge_90": {
+        "frame": 144000.0,
+        "episode_success": 0.9,
+        "episode": 1440.0,
+        "episode_reward": 10.28
+      }
+    }
+  },
+  "archive": {
+    "ppo_early": {
+      "logdir_run": "run_131159_device=cuda,save_video=false",
+      "wandb": "42rvuutk",
+      "n_rows": 500,
+      "first_frame": 0.0,
+      "last_frame": 998000.0,
+      "last_success": 0.22,
+      "max_success": 0.36,
+      "max_success_frame": 922000.0,
+      "at_gate_success": 0.22,
+      "at_gate_frame": 998000.0,
+      "max_before_gate_success": 0.36,
+      "max_before_gate_frame": 922000.0,
+      "official_success": 0.22,
+      "official_frame": 998000.0,
+      "passed": false,
+      "first_ge_gate": {
+        "frame": 4000.0,
+        "episode_success": 0.28,
+        "episode": 40.0,
+        "episode_reward": 4.04
+      },
+      "first_ge_25": {
+        "frame": 4000.0,
+        "episode_success": 0.28,
+        "episode": 40.0,
+        "episode_reward": 4.04
+      },
+      "first_ge_90": null
+    },
+    "3a_early": {
+      "logdir_run": "run_150227_device=cuda,save_snapshot=true,save_video=false",
+      "wandb": "9huskn3f",
+      "n_rows": 150,
+      "first_frame": 0.0,
+      "last_frame": 298000.0,
+      "last_success": 0.8,
+      "max_success": 0.88,
+      "max_success_frame": 260000.0,
+      "at_gate_success": 0.6,
+      "at_gate_frame": 100000.0,
+      "max_before_gate_success": 0.62,
+      "max_before_gate_frame": 84000.0,
+      "official_success": 0.62,
+      "official_frame": 84000.0,
+      "passed": false,
+      "first_ge_gate": null,
+      "first_ge_25": {
+        "frame": 30000.0,
+        "episode_success": 0.26,
+        "episode": 300.0,
+        "episode_reward": 5.04
+      },
+      "first_ge_90": null
+    },
+    "3b_early": {
+      "logdir_run": "run_154425_agent.num_critics=10,device=cuda,save_snapshot=true,save_video=false,utd=5",
+      "wandb": "279mwi4z",
+      "n_rows": 150,
+      "first_frame": 0.0,
+      "last_frame": 298000.0,
+      "last_success": 0.82,
+      "max_success": 0.86,
+      "max_success_frame": 218000.0,
+      "at_gate_success": 0.0,
+      "at_gate_frame": 40000.0,
+      "max_before_gate_success": 0.28,
+      "max_before_gate_frame": 20000.0,
+      "official_success": 0.28,
+      "official_frame": 20000.0,
+      "passed": false,
+      "first_ge_gate": null,
+      "first_ge_25": {
+        "frame": 20000.0,
+        "episode_success": 0.28,
+        "episode": 200.0,
+        "episode_reward": 6.48
+      },
+      "first_ge_90": null
+    }
+  },
+  "skipped": [
+    {
+      "run": "run_131049_device=cuda,save_video=false",
+      "reason": "PPO \u65e9\u671f\u4e2d\u65ad\uff0c\u65e0 eval.csv / train.csv",
+      "wandb": "ww52ifl3"
+    }
+  ],
+  "all_need_rerun": true
+}

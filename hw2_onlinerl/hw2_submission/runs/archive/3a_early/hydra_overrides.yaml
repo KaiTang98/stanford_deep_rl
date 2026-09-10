@@ -1,0 +1,3 @@
+- device=cuda
+- save_video=false
+- save_snapshot=true

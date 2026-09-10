@@ -1,0 +1,2 @@
+Logdir/run_150227_device=cuda,save_snapshot=true,save_video=false
+wandb_id=9huskn3f
