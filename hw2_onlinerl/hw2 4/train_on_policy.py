@@ -18,6 +18,7 @@ import utils
 from logger import Logger
 from replay_buffer import ReplayBufferStorage, make_replay_loader
 from video import TrainVideoRecorder, VideoRecorder
+from viz_progress import ProgressDumper
 
 torch.backends.cudnn.benchmark = True
 
@@ -98,6 +99,8 @@ class Workspace:
         self.timer = utils.Timer()
         self._global_step = 0
         self._global_episode = 0
+        method = os.environ.get("HW2_PROGRESS_METHOD", "")
+        self.progress = ProgressDumper.from_workspace(self, method) if method else None
 
     def setup(self):
         # create logger
@@ -202,6 +205,8 @@ class Workspace:
             metrics = self.agent.bc(self.demo_iter)
             self.logger.log_metrics(metrics, pretrain_step, ty='pretrain')
         self.agent.set_reference_policy()
+        if self.progress is not None:
+            self.progress.maybe_dump(self)
 
         # On-policy training loop
         episode_step, episode_reward = 0, 0
@@ -234,6 +239,8 @@ class Workspace:
             # Eval
             if eval_every_step(self.global_step):
                 self.eval()
+            if self.progress is not None:
+                self.progress.maybe_dump(self)
 
             # Collect one transition and store log prob
             obs = time_step.observation
@@ -271,6 +278,9 @@ class Workspace:
                     self.logger.log_metrics(bc_metrics, self.global_frame, ty='actor')
 
                 self.rollout_buffer.reset()
+
+        if self.progress is not None:
+            self.progress.maybe_dump(self, force=True)
 
     def save_snapshot(self):
         snapshot = self.work_dir / 'snapshot.pt'

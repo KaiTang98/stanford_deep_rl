@@ -22,7 +22,7 @@ QPOS_DIR = ROOT / "viz" / "qpos"
 OUT_DIR = ROOT / "viz"
 
 
-def render_npz(npz_path: Path, camera: str = "corner", size: int = 256, fps: int = 20) -> Path:
+def render_npz(npz_path: Path, camera: str = "corner", size: int = 256, fps: int = 20, out: Path | None = None) -> Path:
     data_in = np.load(npz_path)
     qpos = data_in["qpos"]
     model = mujoco.MjModel.from_xml_path(XML)
@@ -38,7 +38,8 @@ def render_npz(npz_path: Path, camera: str = "corner", size: int = 256, fps: int
             frames.append(np.ascontiguousarray(renderer.render()))
     finally:
         renderer.close()
-    out = OUT_DIR / f"{npz_path.stem}.mp4"
+    out = Path(out) if out is not None else (OUT_DIR / f"{npz_path.stem}.mp4")
+    out.parent.mkdir(parents=True, exist_ok=True)
     imageio.mimsave(str(out), frames, fps=fps)
     print(f"wrote {out} frames={len(frames)}")
     return out
@@ -47,7 +48,12 @@ def render_npz(npz_path: Path, camera: str = "corner", size: int = 256, fps: int
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--camera", default="corner")
+    parser.add_argument("--npz", type=Path, default=None)
+    parser.add_argument("--out", type=Path, default=None)
     args = parser.parse_args()
+    if args.npz is not None:
+        render_npz(args.npz, camera=args.camera, out=args.out)
+        return
     files = sorted(QPOS_DIR.glob("*.npz"))
     if not files:
         raise SystemExit(f"no qpos dumps in {QPOS_DIR}")

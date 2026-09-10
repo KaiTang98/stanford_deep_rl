@@ -17,6 +17,7 @@ import utils
 from logger import Logger
 from replay_buffer import ReplayBufferStorage, make_replay_loader
 from video import TrainVideoRecorder, VideoRecorder
+from viz_progress import ProgressDumper
 
 torch.backends.cudnn.benchmark = True
 
@@ -43,6 +44,8 @@ class Workspace:
         self.timer = utils.Timer()
         self._global_step = 0
         self._global_episode = 0
+        method = os.environ.get("HW2_PROGRESS_METHOD", "")
+        self.progress = ProgressDumper.from_workspace(self, method) if method else None
 
     def setup(self):
         # create logger
@@ -158,7 +161,9 @@ class Workspace:
         for pretrain_step in range(2000):
             metrics = self.agent.bc(self.demo_iter)
             self.logger.log_metrics(metrics, pretrain_step, ty='pretrain')
-        
+        if self.progress is not None:
+            self.progress.maybe_dump(self)
+
         episode_step, episode_reward = 0, 0
         time_step = self.train_env.reset()
         self.replay_storage.add(time_step)
@@ -191,6 +196,8 @@ class Workspace:
             # try to evaluate
             if eval_every_step(self.global_step):
                 self.eval()
+            if self.progress is not None:
+                self.progress.maybe_dump(self)
 
             # sample action
             with torch.no_grad(), utils.eval_mode(self.agent):
@@ -218,6 +225,9 @@ class Workspace:
             self.replay_storage.add(time_step)
             episode_step += 1
             self._global_step += 1
+
+        if self.progress is not None:
+            self.progress.maybe_dump(self, force=True)
 
     def save_snapshot(self):
         snapshot = self.work_dir / 'snapshot.pt'
