@@ -1,7 +1,8 @@
 # =============================================================================
 # CS224R 课程仓库：Mac ↔ Linux GPU 服务器同步
-# 保留：源码、配置、demos/*.npz、作业 tex/pdf、讲义
-# 丢掉：训练产物、缓存、密钥、本机杂文件
+# 保留：源码、配置、demos/*.npz、作业 tex/pdf、讲义、
+#       viz 下的说明/索引/轨迹图（本地读代码用）
+# 丢掉：训练产物、qpos 中间文件、视频、缓存、密钥、本机杂文件
 # =============================================================================
 
 # ----- OS / 编辑器 -----
@@ -122,5 +123,10 @@ temp/
 core
 core.*
 
-# ----- 数据集 -----
-hw2_onlinerl/hw2 4/viz
+# ----- HW2 viz：同步说明/索引/轨迹图；不同步渲染中间件与视频 -----
+# 视频已由上面的 *.mp4 忽略。demos/*.npz 是专家轨迹，不在此列、继续跟踪。
+hw2_onlinerl/hw2 4/viz/**/*.npz
+hw2_onlinerl/hw2 4/viz/qpos/
+hw2_onlinerl/hw2 4/viz/retrain_process/ppo/expert/
+hw2_onlinerl/hw2 4/viz/retrain_process/3a/expert/
+hw2_onlinerl/hw2 4/viz/retrain_process/3b/expert/

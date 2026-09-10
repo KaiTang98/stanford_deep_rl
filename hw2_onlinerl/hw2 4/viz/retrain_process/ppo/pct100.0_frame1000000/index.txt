@@ -1,0 +1,7 @@
+frame=1000000 step=500000 episode=9999
+pct≈100.0% of 1000000 frames
+seeds=[542939521, 562570744, 295289402]
+
+rollout0_success_seed542939521  T=51  last_reward=1.000
+rollout1_fail_seed562570744  T=51  last_reward=0.000
+rollout2_success_seed295289402  T=51  last_reward=1.000
