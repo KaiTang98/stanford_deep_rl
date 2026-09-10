@@ -365,13 +365,13 @@ python tests/test_on_policy.py
 
 ### 3.1 实现代码
 
-- [ ] `bc`：监督行为克隆
+- [x] `bc`：监督行为克隆
 
 L_{\pi}(s_t,a_t) = -\log\pi_\theta(a_t|s_t)
 
   对 batch 取 mean，反传 **只更新 actor**。可参考 `on_policy.py` 里已经写好的 `PPOAgent.bc`。
 
-- [ ] `update_critic`（Bellman）:
+- [x] `update_critic`（Bellman）:
   1. 从当前 policy 采样 a_{t+1} \sim \pi_\theta(s_{t+1})（可用 `dist.sample(clip=self.stddev_clip)`）
   2. **无放回**抽两个 target critic：`random.sample(list, 2)`，取 **min**
   3. Target（`sg` = stop gradient）:
@@ -387,7 +387,7 @@ y = r_t + \gamma_{\text{batch}} \min\bar Q_i(s_{t+1},a_{t+1}),\bar Q_j(s_{t+1},a
 
 即 \bar Q \leftarrow (1-\rho)\bar Q + \rho Q，`ρ = critic_target_tau = 0.005`
 
-- [ ] `update_actor`:
+- [x] `update_actor`:
   1. a' \sim \pi_\theta(\cdot|s)
   2. 最大化所有 critic 的平均 Q（实现成 minimize）:
 
@@ -408,11 +408,11 @@ PDF 里的常见 bug 对照:
 默认 config：`utd=1`，`agent.num_critics=2`，`batch_size=256`，`nstep=3`，`lr=1e-4`，`hidden_dim=256`。  
 作业只要看到 **100k steps 前 ≥ 90%**；默认 `num_train_frames=300000` 可以继续跑，曲线更好看。可与 PPO 同时占另一张卡。
 
-- [ ] 启动:
+- [x] 启动:
   ```bash
   CUDA_VISIBLE_DEVICES=1 python train_off_policy.py device=cuda save_video=false
   ```
-- [ ] 看 WandB 到 **100k steps**；成功率应 **≥ 90%**
+- [x] 看 WandB 到 **100k steps**；成功率应 **≥ 90%**
 
 **记录区 — Problem 3A（UTD=1）**
 
@@ -432,7 +432,7 @@ PDF 里的常见 bug 对照:
 
 ### 3.3 跑实验 B：10 critics，UTD=5（1 分）
 
-- [ ] **不必改** `modal_off_policy.py`，Hydra 命令行覆盖即可:
+- [x] **不必改** `modal_off_policy.py`，Hydra 命令行覆盖即可:
   ```bash
   CUDA_VISIBLE_DEVICES=2 python train_off_policy.py device=cuda save_video=false agent.num_critics=10 utd=5
   ```
