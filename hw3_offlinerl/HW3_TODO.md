@@ -227,9 +227,9 @@ PY
 
 第一次跑会把 AntMaze 数据下到 `~/.d4rl/datasets/`，可能要几分钟到十几分钟。`transitions` 为 0 或 `gym.make` 失败都算没过。
 
-- [ ] smoke test 打印出 4090 名 + `gym 0.23.1` + umaze 数据集条数
-- [ ] 服务器 `wandb login`（脚本要 `--use_wandb` 才打点；没登录会在 init 时报错）
-- [ ] 作业目录已在服务器**本地盘**（不是 OneDrive 挂载）
+- [x] smoke test 打印出 4090 名 + `gym 0.23.1` + umaze 数据集条数
+- [x] 服务器 `wandb login`（脚本要 `--use_wandb` 才打点；没登录会在 init 时报错）
+- [x] 作业目录已在服务器**本地盘**（不是 OneDrive 挂载）
 
 
 
