@@ -22,13 +22,17 @@
 - BC / Filtered BC、trainer、PointMass 环境都是现成的，**不要改算法逻辑**
 - **算力原则（自学）**: Mac 写代码；**6 卡 4090 服务器训练**；Modal 只当 D4RL 装崩时的退路（自学没有课内 credits；Starter 绑卡每月送 $30，整份作业约 $12–25，通常够，但没必要一上来买）
 
+
+
 ### 机器怎么分工
 
-| 机器 | 用来做什么 | 不要做什么 |
-| ---- | ---------- | ---------- |
-| Mac（本机） | 读 PDF、填五个 TODO 文件、写 LaTeX、看 WandB、编译报告 | **不要**在 Mac 上跑 AntMaze / D4RL；不要给 HW3 装 Mac 版 MuJoCo |
+
+| 机器                   | 用来做什么                                         | 不要做什么                                                |
+| -------------------- | --------------------------------------------- | ---------------------------------------------------- |
+| Mac（本机）              | 读 PDF、填五个 TODO 文件、写 LaTeX、看 WandB、编译报告        | **不要**在 Mac 上跑 AntMaze / D4RL；不要给 HW3 装 Mac 版 MuJoCo |
 | **6×4090 服务器（主训练机）** | 全部实验：AWAC / IQL AntMaze + PointMass stitching | **不要**复用 `cs224r-hw2-local`；不要 6 卡并行一个 job（代码是单进程单卡） |
-| Modal | 环境装了 1–2 小时仍失败时的退路 | 自学没有课内兑换码；不要为这门课单独充 credits |
+| Modal                | 环境装了 1–2 小时仍失败时的退路                            | 自学没有课内兑换码；不要为这门课单独充 credits                          |
+
 
 为什么选 4090 而不是 Modal：
 
@@ -74,21 +78,29 @@ CUDA_VISIBLE_DEVICES=2 python cs224r/scripts/run_algo.py \
 
 ---
 
+
+
 ## Phase 0: 环境、账号与预习
+
+
 
 ### 0.1 Mac：只做开发，不训练
 
 本机 **可以**做的：填 TODO、写 LaTeX、编译 PDF、看 WandB。  
 本机 **不要**做的：`pip install -r hw3/requirements.txt`、跑 `run_algo.py`。trainer 顶层 `import d4rl`，依赖 Linux + `mujoco_py`。
 
-- [ ] 本机继续用现有环境写代码即可（不必新建 `cs224r-hw3`）
-- [ ] 本机 `wandb login`（方便看服务器打上来的曲线；**不要把 key 发到聊天里**）
+- [x] 本机继续用现有环境写代码即可（不必新建 `cs224r-hw3`）
+- [x] 本机 `wandb login`（方便看服务器打上来的曲线；**不要把 key 发到聊天里**）
+
+
 
 ### 0.2 4090 服务器：一次性训练环境（给服务器 agent 的安装任务）
 
 > **这段就是之后丢给服务器 agent 的说明书。** 目标：在 **其中一张 4090** 上下面这段 smoke test 全绿。6 张卡共用这一个 conda。  
 > **不要**复用 `cs224r-hw2-local`（HW2 是新 PyTorch + `gym==0.26` + Meta-World；HW3 要 `gym==0.23.1` + D4RL）。  
 > **不要**在 OneDrive / 网络盘上训练；把仓库 rsync 或 git clone 到服务器本地盘。
+
+
 
 #### 成功标准（agent 做完必须打印出来）
 
@@ -101,12 +113,16 @@ antmaze-umaze-v0 made
 d4rl dataset transitions: <N>   # N 应是几十万量级，不是 0
 ```
 
+
+
 #### 不要做的事
 
 - 不要 `conda activate cs224r-hw2-local` 然后往里面装 D4RL
 - 不要直接 `pip install -r requirements.txt`（里面的 `torch==1.13.1` 会从 PyPI 拉到 CPU/错 CUDA 轮子）
 - 不要改五个算法文件以外的训练逻辑；安装阶段只动环境
 - `mujoco_py` / D4RL 死磕超过 **约 2 小时** 仍失败：停，回报卡点，改走 Modal Starter，不要换 5090 硬装同一套旧栈
+
+
 
 #### 步骤 A — 系统依赖和 MuJoCo 2.1.0（HW2 做过就跳过）
 
@@ -166,6 +182,8 @@ pip install "mujoco-py==2.1.2.14"
 pip install "D4RL @ git+https://github.com/Farama-Foundation/d4rl@89141a689b0353b0dac3da5cba60da4b1b16254d"
 ```
 
+
+
 #### 步骤 C — 代码放到本地盘并 `pip install -e .`
 
 ```bash
@@ -213,16 +231,22 @@ PY
 - [ ] 服务器 `wandb login`（脚本要 `--use_wandb` 才打点；没登录会在 init 时报错）
 - [ ] 作业目录已在服务器**本地盘**（不是 OneDrive 挂载）
 
+
+
 #### 常见失败怎么处理（给 agent）
 
-| 现象 | 处理 |
-| ---- | ---- |
-| `mujoco_py` 编译缺头文件 / `GLEW` | 回到步骤 A 补 apt，`source ~/.bashrc` 后再装一次 |
-| `import d4rl` 因某个子环境 ImportError | 确认 `D4RL_SUPPRESS_IMPORT_ERROR=1` 已 export |
-| `gym.make('antmaze-umaze-v0')` 找不到 | D4RL 没装上，或 gym 版本不是 0.23.x（0.26 / gymnasium 会挂） |
-| 数据集下载 HTTP 403 / 超时 | 看 `~/.d4rl/datasets/` 是否不完整；重试 `qlearning_dataset`；URL 挂了再搜该 commit 的 mirror，文件仍放到 `~/.d4rl/datasets/` |
-| `torch` 报 sm_89 / no kernel image | 卸 1.13.1，改装 HW2 那套新 torch，**不要**为这改算法 |
-| `pip install -e .` 后仍 `No module named cs224r` | 确认 cwd 是 `hw3/`（里面有 `setup.py` 和 `cs224r/`），且当前就是 `cs224r-hw3` |
+
+| 现象                                             | 处理                                                                                                     |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `mujoco_py` 编译缺头文件 / `GLEW`                    | 回到步骤 A 补 apt，`source ~/.bashrc` 后再装一次                                                                  |
+| `import d4rl` 因某个子环境 ImportError               | 确认 `D4RL_SUPPRESS_IMPORT_ERROR=1` 已 export                                                             |
+| `gym.make('antmaze-umaze-v0')` 找不到             | D4RL 没装上，或 gym 版本不是 0.23.x（0.26 / gymnasium 会挂）                                                        |
+| 数据集下载 HTTP 403 / 超时                            | 看 `~/.d4rl/datasets/` 是否不完整；重试 `qlearning_dataset`；URL 挂了再搜该 commit 的 mirror，文件仍放到 `~/.d4rl/datasets/` |
+| `torch` 报 sm_89 / no kernel image              | 卸 1.13.1，改装 HW2 那套新 torch，**不要**为这改算法                                                                  |
+| `pip install -e .` 后仍 `No module named cs224r` | 确认 cwd 是 `hw3/`（里面有 `setup.py` 和 `cs224r/`），且当前就是 `cs224r-hw3`                                         |
+
+
+
 
 ### 0.3 服务器训练注意（HW3 没有 HW2 那种 demo 路径补丁）
 
@@ -234,6 +258,8 @@ HW3 入口是 `run_algo.py`，不 copy `/root/demos`，**不用改 trainer**。
 - [ ] 必须在 `hw3/` 目录启动（PointMass 的 `--offline_dataset offline_datasets/...` 是相对路径）
 - [ ] eval 渲染依赖 `MUJOCO_GL=egl`。若只是视频失败、数字还在刷，可以先忽略视频；PointMass 轨迹图不依赖 MuJoCo 渲染
 
+
+
 ### 0.4 备选：Modal（默认跳过）
 
 只有 4090 上 D4RL / `mujoco_py` 超过 ~2 小时仍失败时才用。Starter 绑卡后每月 $30 免费额度，按 T4 ≈ $0.59/h 估，整份 HW3 约 20 GPU·小时 ≈ $12，通常不用额外充。
@@ -242,7 +268,7 @@ HW3 入口是 `run_algo.py`，不 copy `/root/demos`，**不用改 trainer**。
 
 ### 0.5 通读材料
 
-- [ ] 通读 [`hw3/README.md`](hw3/README.md)（官方 Modal 入口；自学改走 `run_algo.py`）
+- [ ] 通读 `[hw3/README.md](hw3/README.md)`（官方 Modal 入口；自学改走 `run_algo.py`）
 - [ ] 通读作业 PDF Overview + Setup + Autograder + 提交格式
 - [ ] 通读只读文件（理解 pipeline，**不要改算法逻辑**）:
   - [ ] `cs224r/scripts/run_algo.py` — `--algo {bc,awac,iql}`；AntMaze `num_timesteps=300000`、`scalar_log_freq=50000`；PointMass `50000` / `2000` / 20 eval episodes
@@ -259,44 +285,48 @@ HW3 入口是 `run_algo.py`，不 copy `/root/demos`，**不用改 trainer**。
 
 **关键概念速记**
 
-| 项目 | 值 |
-| ---- | -- |
-| 任务 | D4RL AntMaze（连续）+ PointMass（离散 gridworld） |
-| AntMaze 奖励 | 稀疏：到 goal 为 0，否则 -1（鼓励尽快到） |
-| PointMass 奖励 | 同样稀疏：每步 -1，到 goal 为 0 |
-| Eval | `Eval_AverageReturn` = eval episode return 的均值；报告取 **最终 checkpoint**，再跨 3 seed 算 mean/std |
-| AWAC umaze | `antmaze-umaze-v0`，300k steps，~1h，3 seeds |
-| AWAC medium | `antmaze-medium-diverse-v0`，300k steps，~1.5h，3 seeds |
-| IQL umaze | 同上，扫 `ζ ∈ {0.2, 0.9}`，各 3 seeds |
-| IQL medium | 用更好的 ζ，3 seeds |
-| Stitching 数据 | `offline_datasets/pointmass_stitching_dataset.npz`；数据集 max **-46**、avg **-104** |
-| PointMass 训练 | `PointmassMedium-v0`，50k steps；IQL ~15min，Filtered BC ~10min |
-| Actor 温度 λ | `awac_lambda=0.1`（AWAC 和 IQL 共用 `MLPPolicyAWAC`） |
-| Autograder | 只收 P1 两套 + P2 前两套的 CSV；P2.1 **只交最好 ζ**；stitching **不进** autograder |
+
+| 项目           | 值                                                                                         |
+| ------------ | ----------------------------------------------------------------------------------------- |
+| 任务           | D4RL AntMaze（连续）+ PointMass（离散 gridworld）                                                 |
+| AntMaze 奖励   | 稀疏：到 goal 为 0，否则 -1（鼓励尽快到）                                                                |
+| PointMass 奖励 | 同样稀疏：每步 -1，到 goal 为 0                                                                     |
+| Eval         | `Eval_AverageReturn` = eval episode return 的均值；报告取 **最终 checkpoint**，再跨 3 seed 算 mean/std |
+| AWAC umaze   | `antmaze-umaze-v0`，300k steps，~1h，3 seeds                                                 |
+| AWAC medium  | `antmaze-medium-diverse-v0`，300k steps，~1.5h，3 seeds                                      |
+| IQL umaze    | 同上，扫 `ζ ∈ {0.2, 0.9}`，各 3 seeds                                                           |
+| IQL medium   | 用更好的 ζ，3 seeds                                                                            |
+| Stitching 数据 | `offline_datasets/pointmass_stitching_dataset.npz`；数据集 max **-46**、avg **-104**           |
+| PointMass 训练 | `PointmassMedium-v0`，50k steps；IQL ~15min，Filtered BC ~10min                              |
+| Actor 温度 λ   | `awac_lambda=0.1`（AWAC 和 IQL 共用 `MLPPolicyAWAC`）                                          |
+| Autograder   | 只收 P1 两套 + P2 前两套的 CSV；P2.1 **只交最好 ζ**；stitching **不进** autograder                        |
+
 
 ---
+
+
 
 ## Phase 1: Problem 1 — Advantage-Weighted Actor-Critic（2 分）
 
 文件:
 
-- [`hw3/cs224r/policies/MLP_policy.py`](hw3/cs224r/policies/MLP_policy.py)
-- [`hw3/cs224r/critics/awac_critic.py`](hw3/cs224r/critics/awac_critic.py)
-- [`hw3/cs224r/agents/awac_agent.py`](hw3/cs224r/agents/awac_agent.py)
+- `[hw3/cs224r/policies/MLP_policy.py](hw3/cs224r/policies/MLP_policy.py)`
+- `[hw3/cs224r/critics/awac_critic.py](hw3/cs224r/critics/awac_critic.py)`
+- `[hw3/cs224r/agents/awac_agent.py](hw3/cs224r/agents/awac_agent.py)`
 
 Actor 目标（优势加权 NLL）:
 
-\[
-L_\pi(\psi)=-\mathbb{E}_{(s,a)\sim\mathcal{D}}\Big[\log\pi_\psi(a\mid s)\,\exp\big(\tfrac{1}{\lambda}\mathcal{A}^{\pi_k}(s,a)\big)\Big]
-\]
 
-Critic 用 clipped double Q；target 动作用 **当前策略** 采样 \(a'\sim\pi(\cdot\mid s')\)（不是数据集里的 next action）:
+L_\pi(\psi)=-\mathbb{E}*{(s,a)\sim\mathcal{D}}\Big[\log\pi*\psi(a\mid s)\exp\big(\tfrac{1}{\lambda}\mathcal{A}^{\pi_k}(s,a)\big)\Big]
 
-\[
-y = r + \gamma\,(1-d)\,\min_{i\in\{1,2\}} Q_{\bar\phi_i}(s', a')
-\]
 
-两个 Q 都对同一个 \(y\) 做 MSE。`update_target_network()` 已经写好（EMA，`τ=0.005`）。
+Critic 用 clipped double Q；target 动作用 **当前策略** 采样 a'\sim\pi(\cdot\mid s')（不是数据集里的 next action）:
+
+
+y = r + \gamma(1-d)\min_{i\in1,2} Q_{\bar\phi_i}(s', a')
+
+
+两个 Q 都对同一个 y 做 MSE。`update_target_network()` 已经写好（EMA，`τ=0.005`）。
 
 IQL 的 actor 也走 `MLPPolicyAWAC`，所以 **这段 AWR loss 必须先写对**。
 
@@ -304,26 +334,26 @@ IQL 的 actor 也走 `MLPPolicyAWAC`，所以 **这段 AWR loss 必须先写对*
 
 - [ ] `MLPPolicyAWAC.update`：用 `adv_n` 和 `self.lambda_awac` 算指数权重
 
-\[
-w = \exp(A / \lambda)
-\]
 
-  `log_prob_n` 已经算好；后面会 `clamp(max=50)` 再做 `-(log_prob * w).mean()`。这里 **只填 `exp_weights`**，不要自己再 clamp / 不要改 loss 公式。
+w = \exp(A / \lambda)
+
+
+  `log_prob_n` 已经算好；后面会 `clamp(max=50)` 再做 `-(log_prob * w).mean()`。这里 **只填** `exp_weights`，不要自己再 clamp / 不要改 loss 公式。
 
 - [ ] `AWACCritic.update`：clipped double-Q TD
   1. `_get_q_value` 算 `Q1(s,a)`、`Q2(s,a)`
-  2. `torch.no_grad()` 里 `get_target_q(next_ob_no, next_actions)` 得到 \(\min \bar Q(s',a')\)
+  2. `torch.no_grad()` 里 `get_target_q(next_ob_no, next_actions)` 得到 \min \bar Q(s',a')
   3. terminal 要 mask：`y = r + γ * target * (1 - done)`
   4. `loss` / `loss2` 分别是两个 Q 对 **同一个** `y` 的 MSE（可用 `self.mse_loss`）
   5. 后面已经 `(loss + loss2).backward()`，不要自己 `optimizer.step`
 
 - [ ] `AWACAgent.estimate_advantage`：`A(s,a) = Q(s,a) - V(s)`
   - `Q(s,a)`：`self.critic.get_q(ob_no, ac_na)`（已经是 min 双 Q）
-  - `V(s)`：从当前 actor 采样 **一个** \(a\sim\pi(\cdot\mid s)\)，再 `get_q(s, a)`（单样本估计）
+  - `V(s)`：从当前 actor 采样 **一个** a\sim\pi(\cdot\mid s)，再 `get_q(s, a)`（单样本估计）
   - 整个函数已包在 `torch.no_grad()` 里
 
 - [ ] `AWACAgent.train` 两处:
-  1. `next_actions`：对 `next_ob_no` 用当前 actor 采样 \(a'\sim\pi(\cdot\mid s')\)（`self.actor(...)` 返回 distribution，再 `.sample()`）。discrete 是 `[B]`，continuous 是 `[B, ac_dim]`
+  1. `next_actions`：对 `next_ob_no` 用当前 actor 采样 a'\sim\pi(\cdot\mid s')（`self.actor(...)` 返回 distribution，再 `.sample()`）。discrete 是 `[B]`，continuous 是 `[B, ac_dim]`
   2. actor：`estimate_advantage` → `self.actor.update(ob_no, ac_na, adv_n=adv)`；`actor_loss` 就是这个返回值
 
 **自测**（没有 HW2 那种 pytest）: 实现后不应再是 `None`；单 seed 跑起来 critic/actor loss 有限，WandB 的 `Eval_AverageReturn` 在刷且大致上升。
@@ -358,17 +388,21 @@ w = \exp(A / \lambda)
 
 **记录区 — Problem 1A（umaze）**
 
-| 项目 | 值 |
-| ---- | -- |
-| WandB run URLs (seed 1/2/3) | |
-| seed1 最终 Eval_AverageReturn | |
-| seed2 最终 Eval_AverageReturn | |
-| seed3 最终 Eval_AverageReturn | |
-| mean | |
-| std | |
-| CSV | `csv_data/P1/1/awac_umaze_seed{1,2,3}.csv` |
+
+| 项目                          | 值                                          |
+| --------------------------- | ------------------------------------------ |
+| WandB run URLs (seed 1/2/3) |                                            |
+| seed1 最终 Eval_AverageReturn |                                            |
+| seed2 最终 Eval_AverageReturn |                                            |
+| seed3 最终 Eval_AverageReturn |                                            |
+| mean                        |                                            |
+| std                         |                                            |
+| CSV                         | `csv_data/P1/1/awac_umaze_seed{1,2,3}.csv` |
+
 
 - [ ] 从 WandB 图名恰好为 `Eval_AverageReturn` 的图导出 CSV（**一 seed 一文件**，不要合并）
+
+
 
 ### 1.3 跑实验 B：antmaze-medium-diverse-v0（1 分）
 
@@ -390,15 +424,19 @@ w = \exp(A / \lambda)
 
 **记录区 — Problem 1B（medium-diverse）**
 
-| 项目 | 值 |
-| ---- | -- |
-| WandB run URLs (seed 1/2/3) | |
-| seed1 / seed2 / seed3 最终 return | |
-| mean | |
-| std | |
-| CSV | `csv_data/P1/2/awac_medium_maze_seed{1,2,3}.csv` |
+
+| 项目                              | 值                                                |
+| ------------------------------- | ------------------------------------------------ |
+| WandB run URLs (seed 1/2/3)     |                                                  |
+| seed1 / seed2 / seed3 最终 return |                                                  |
+| mean                            |                                                  |
+| std                             |                                                  |
+| CSV                             | `csv_data/P1/2/awac_medium_maze_seed{1,2,3}.csv` |
+
 
 - [ ] 导出 3 份 CSV
+
+
 
 ### 1.4 写报告
 
@@ -407,31 +445,33 @@ w = \exp(A / \lambda)
 
 ---
 
+
+
 ## Phase 2: Problem 2 — Implicit Q-Learning（5 分）
 
 文件:
 
-- [`hw3/cs224r/critics/iql_critic.py`](hw3/cs224r/critics/iql_critic.py)
-- [`hw3/cs224r/agents/iql_agent.py`](hw3/cs224r/agents/iql_agent.py)
+- `[hw3/cs224r/critics/iql_critic.py](hw3/cs224r/critics/iql_critic.py)`
+- `[hw3/cs224r/agents/iql_agent.py](hw3/cs224r/agents/iql_agent.py)`
 
 IQL 的 actor 和 AWAC 一样（advantage-weighted NLL，已在 Phase 1 实现）。差别在 critic：
 
-- 单独的 \(V_\phi(s)\)，用 **expectile** 回归 \(\bar Q(s,a)\)
-- Q 的 backup 是 \(y = r + \gamma V(s')\)，**不采样** \(a'\sim\pi\)，只用数据集里见过的 \((s,a)\)
+- 单独的 V_\phi(s)，用 **expectile** 回归 \bar Q(s,a)
+- Q 的 backup 是 y = r + \gamma V(s')，**不采样** a'\sim\pi，只用数据集里见过的 (s,a)
 
-\[
-L_2^\zeta(\mu)=\lvert\zeta-\mathbbm{1}\{\mu\le 0\}\rvert\,\mu^2
-\]
 
-\[
-L_V(\phi)=\mathbb{E}_{(s,a)\sim D}\big[L_2^\zeta(\bar Q(s,a)-V_\phi(s))\big]
-\]
+L_2^\zeta(\mu)=\lvert\zeta-\mathbbm{1}\mu\le 0\rvert\mu^2
 
-\[
-L_Q(\theta)=\mathbb{E}_{(s,a,s')\sim D}\big[(r+\gamma V_\phi(s')-Q_\theta(s,a))^2\big]
-\]
 
-\(\zeta>0.5\) 时更重视 **大于** 当前 V 的 TD target（往上偏），适合从混合质量数据里抠高价值片段。
+
+L_V(\phi)=\mathbb{E}*{(s,a)\sim D}\big[L_2^\zeta(\bar Q(s,a)-V*\phi(s))\big]
+
+
+
+L_Q(\theta)=\mathbb{E}*{(s,a,s')\sim D}\big[(r+\gamma V*\phi(s')-Q_\theta(s,a))^2\big]
+
+
+\zeta>0.5 时更重视 **大于** 当前 V 的 TD target（往上偏），适合从混合质量数据里抠高价值片段。
 
 ### 2.1 实现代码
 
@@ -441,15 +481,15 @@ L_Q(\theta)=\mathbb{E}_{(s,a,s')\sim D}\big[(r+\gamma V_\phi(s')-Q_\theta(s,a))^
 
 - [ ] `expectile_loss(diff)`：返回 **逐样本** `[B]`，不要在这里 `.mean()`
 
-\[
-L = \lvert\zeta - \mathbbm{1}\{\delta \le 0\}\rvert \cdot \delta^2,\quad \zeta=\texttt{self.iql\_expectile}
-\]
 
-- [ ] `update_v`：`value_loss` = expectile(\(Q_{\bar\theta}(s,a) - V(s)\)) 再 mean  
+L = \lvert\zeta - \mathbbm{1}\delta \le 0\rvert \cdot \delta^2,\quad \zeta=\texttt{self.iqlexpectile}
+
+
+- [ ] `update_v`：`value_loss` = expectile(Q_{\bar\theta}(s,a) - V(s)) 再 mean  
   `q_t_values` 和 `v_t` 已经算好
 
 - [ ] `update_q`：IQL Bellman，**用 V 不用 Q(s',a')**
-  1. `torch.no_grad()`：`v_net(next_ob_no)` → \(V(s')\)
+  1. `torch.no_grad()`：`v_net(next_ob_no)` → V(s')
   2. `y = r + γ V(s') (1 - done)`
   3. 两个 Q 都对同一个 `y` 做 MSE → `loss`、`loss2`
 
@@ -496,16 +536,20 @@ L = \lvert\zeta - \mathbbm{1}\{\delta \le 0\}\rvert \cdot \delta^2,\quad \zeta=\
 
 **记录区 — Problem 2.1（IQL umaze）**
 
-| ζ | seed1 | seed2 | seed3 | mean | std | WandB |
-| - | ----- | ----- | ----- | ---- | --- | ----- |
-| 0.2 | | | | | | |
-| 0.9 | | | | | | |
+
+| ζ   | seed1 | seed2 | seed3 | mean | std | WandB |
+| --- | ----- | ----- | ----- | ---- | --- | ----- |
+| 0.2 |       |       |       |      |     |       |
+| 0.9 |       |       |       |      |     |       |
+
 
 - 更好的 ζ: ________
 - 一句话原因:
 
 - [ ] Autograder 用的 CSV **只导出更好那一组** 的 3 个 seed → `csv_data/P2/1/iql_umaze_seed{1,2,3}.csv`  
   差的那组仍要写进报告表格，但不要放进 `P2/1/`
+
+
 
 ### 2.3 跑实验：medium-diverse + 对比 AWAC（2 分）
 
@@ -530,28 +574,34 @@ L = \lvert\zeta - \mathbbm{1}\{\delta \le 0\}\rvert \cdot \delta^2,\quad \zeta=\
 - [ ] 填对比表：umaze / medium-diverse × AWAC / IQL（都用最终 mean）
 - [ ] 3 句：更难的任务（更长 horizon、更大地图）上谁更好，接到 **OOD 动作** 和 **value estimation**  
   提示草稿（写报告前自己改，不要原文照抄）:
-  - AWAC 的 Q backup 要 \(a'\sim\pi(\cdot\mid s')\)，策略一偏出数据集，\(Q(s',a')\) 就可能高估
-  - IQL 的 Q 只在数据集 \((s,a)\) 上回归，next-state 用 \(V(s')\)，避免对未见过的 a' 查询 Q
+  - AWAC 的 Q backup 要 a'\sim\pi(\cdot\mid s')，策略一偏出数据集，Q(s',a') 就可能高估
+  - IQL 的 Q 只在数据集 (s,a) 上回归，next-state 用 V(s')，避免对未见过的 a' 查询 Q
   - expectile V 进一步往高价值轨迹偏，medium 这种 stitching / 长程任务通常更吃香
 
 **记录区 — Problem 2.2**
 
-| 项目 | 值 |
-| ---- | -- |
-| 使用的 ζ | |
-| seed1 / 2 / 3 最终 return | |
-| mean | |
-| std | |
-| CSV | `csv_data/P2/2/iql_medium_maze_seed{1,2,3}.csv` |
+
+| 项目                      | 值                                               |
+| ----------------------- | ----------------------------------------------- |
+| 使用的 ζ                   |                                                 |
+| seed1 / 2 / 3 最终 return |                                                 |
+| mean                    |                                                 |
+| std                     |                                                 |
+| CSV                     | `csv_data/P2/2/iql_medium_maze_seed{1,2,3}.csv` |
+
 
 对比表草稿（填最终 mean）:
 
-| | AWAC | IQL |
-| - | ---- | --- |
-| antmaze-umaze | | |
-| antmaze-medium-diverse | | |
+
+|                        | AWAC | IQL |
+| ---------------------- | ---- | --- |
+| antmaze-umaze          |      |     |
+| antmaze-medium-diverse |      |     |
+
 
 - 差异解释草稿:
+
+
 
 ### 2.4 PointMass stitching：IQL vs Filtered BC（1 分）
 
@@ -577,27 +627,35 @@ L = \lvert\zeta - \mathbbm{1}\{\delta \le 0\}\rvert \cdot \delta^2,\quad \zeta=\
     --filter_top_percent 10 --use_wandb --seed 1
   ```
 - [ ] 每个算法、每个 seed：最终 checkpoint 的 `Eval_AverageReturn` 和 `Eval_MaxReturn`；再跨 seed 报 mean ± std
-- [ ] 在服务器 `hw3/data/hw3_<exp_name>_.../` 里找 **`eval_last_traj.png`**（`set_logdir(.../eval_)` → `eval_last_traj.png`）。每个算法选 **一个 seed** 的最终图即可。
+- [ ] 在服务器 `hw3/data/hw3_<exp_name>_.../` 里找 `eval_last_traj.png`（`set_logdir(.../eval_)` → `eval_last_traj.png`）。每个算法选 **一个 seed** 的最终图即可。
 - [ ] 分析：IQL 是否 > -46；和 Filtered BC 比谁高；是否表现出 stitching
 
 **记录区 — Problem 2.3**
 
-| Algorithm | Average Return ± std | Maximum Return ± std | WandB |
-| --------- | -------------------- | -------------------- | ----- |
-| IQL | ± | ± | |
-| Filtered BC | ± | ± | |
 
-| 图 | 路径 |
-| -- | ---- |
-| IQL 轨迹 | `hw3/data/.../eval_last_traj.png` |
-| Filtered BC 轨迹 | |
+| Algorithm   | Average Return ± std | Maximum Return ± std | WandB |
+| ----------- | -------------------- | -------------------- | ----- |
+| IQL         | ±                    | ±                    |       |
+| Filtered BC | ±                    | ±                    |       |
+
+
+
+| 图              | 路径                                |
+| -------------- | --------------------------------- |
+| IQL 轨迹         | `hw3/data/.../eval_last_traj.png` |
+| Filtered BC 轨迹 |                                   |
+
 
 - IQL 最终 avg 是否 > -46:
 - stitching 一句话:
 
 ---
 
+
+
 ## Phase 3: 收尾
+
+
 
 ### 3.1 报告 PDF
 
@@ -612,6 +670,8 @@ L = \lvert\zeta - \mathbbm{1}\{\delta \le 0\}\rvert \cdot \delta^2,\quad \zeta=\
   latexmk -pdf CS224R_2026_Homework_3.tex
   ```
 - [ ] 通读最终 PDF
+
+
 
 ### 3.2 代码与 CSV 归档（自学备份；官方 zip 格式如下）
 
@@ -641,7 +701,7 @@ submit.zip
 
 CSV 规则（autograder 会卡）:
 
-- 必须从 WandB **名为 `Eval_AverageReturn` 的那张图**导出，不要下别的 metric
+- 必须从 WandB **名为** `Eval_AverageReturn` **的那张图**导出，不要下别的 metric
 - **一 seed 一文件**，每个子目录恰好 3 个 CSV，且是同一超参
 - stitching / 较差的那个 ζ **不进** `csv_data/`
 
@@ -650,9 +710,13 @@ CSV 规则（autograder 会卡）:
 
 ---
 
+
+
 ## Phase 4: 完成后 — 多模型 Review 打分
 
 > 你做完后回来找我，我会开**多个 agent、使用不同模型**分别 review，再汇总打分。
+
+
 
 ### 你需要提供
 
@@ -661,18 +725,24 @@ CSV 规则（autograder 会卡）:
 3. 编译好的 PDF 报告
 4. （可选）WandB run 链接 / 服务器 `hw3/data/` 日志路径
 
+
+
 ### Review 维度（按官方 7 分）
 
-| 维度 | 分值 | 检查内容 |
-| ---- | ---- | -------- |
-| P1 AWAC 代码 | （含在实验里） | AWR 权重、clipped double-Q、terminal mask、单样本 V、\(a'\sim\pi\) |
-| P1A umaze | 1 | 3 seed 最终 mean ± std；CSV 齐 |
-| P1B medium | 1 | 同上 |
-| P2 IQL 代码 | （含在实验里） | `v_net`、expectile、\(L_V\)、\(y=r+\gamma V(s')\)、A=Q-V |
-| P2.1 ζ 扫描 | 2 | 0.2 / 0.9 都有数；解释哪个更好；autograder 只交最好 ζ |
-| P2.2 medium + 对比 | 2 | IQL medium 数字；AWAC vs IQL 表；3 句接到 OOD / value |
-| P2.3 stitching | 1 | avg/max ± std；两张轨迹图；是否 > -46 以及为何 IQL 更能 stitch |
-| **合计** | **7** | |
+
+| 维度               | 分值      | 检查内容                                                  |
+| ---------------- | ------- | ----------------------------------------------------- |
+| P1 AWAC 代码       | （含在实验里） | AWR 权重、clipped double-Q、terminal mask、单样本 V、a'\sim\pi |
+| P1A umaze        | 1       | 3 seed 最终 mean ± std；CSV 齐                            |
+| P1B medium       | 1       | 同上                                                    |
+| P2 IQL 代码        | （含在实验里） | `v_net`、expectile、L_V、y=r+\gamma V(s')、A=Q-V          |
+| P2.1 ζ 扫描        | 2       | 0.2 / 0.9 都有数；解释哪个更好；autograder 只交最好 ζ                |
+| P2.2 medium + 对比 | 2       | IQL medium 数字；AWAC vs IQL 表；3 句接到 OOD / value         |
+| P2.3 stitching   | 1       | avg/max ± std；两张轨迹图；是否 > -46 以及为何 IQL 更能 stitch       |
+| **合计**           | **7**   |                                                       |
+
+
+
 
 ### 触发方式
 
@@ -683,6 +753,8 @@ CSV 规则（autograder 会卡）:
 并附上代码路径、PDF、CSV/截图位置即可。
 
 ---
+
+
 
 ## 推荐实现顺序
 
@@ -708,15 +780,19 @@ Mac: v_net → expectile → update_v → update_q → IQL advantage / actor
 
 ---
 
+
+
 ## 进度总览
 
-| Phase | 内容 | 状态 |
-| ----- | ---- | ---- |
-| 0 | 4090 环境 + WandB + 预习 | ⬜ |
-| 1 | AWAC 代码 + umaze + medium | ⬜ |
-| 2 | IQL 代码 + ζ 扫描 + medium 对比 + stitching | ⬜ |
-| 3 | 报告 + CSV 归档 | ⬜ |
-| 4 | 多模型 Review | ⬜ |
+
+| Phase | 内容                                    | 状态  |
+| ----- | ------------------------------------- | --- |
+| 0     | 4090 环境 + WandB + 预习                  | ⬜   |
+| 1     | AWAC 代码 + umaze + medium              | ⬜   |
+| 2     | IQL 代码 + ζ 扫描 + medium 对比 + stitching | ⬜   |
+| 3     | 报告 + CSV 归档                           | ⬜   |
+| 4     | 多模型 Review                            | ⬜   |
+
 
 ---
 
